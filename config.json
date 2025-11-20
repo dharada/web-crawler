@@ -1,0 +1,16 @@
+{
+  "start_urls": [
+    "https://docs.mulesoft.com/release-notes/index",
+    "https://docs.mulesoft.com/api-governance/",
+    "https://docs.mulesoft.com/api-governance/add-tags",
+    "https://docs.mulesoft.com/api-governance/monitor-api-conformance",
+    "https://docs.mulesoft.com/api-governance/cli-command-list",
+    "https://docs.mulesoft.com/general/",
+    "https://docs.mulesoft.com/general/glossary",
+    "https://docs.mulesoft.com/anypoint-security/",
+    "https://docs.mulesoft.com/anypoint-security/index-secrets-manager",
+    "https://docs.mulesoft.com/visualizer/",
+    "https://docs.mulesoft.com/visualizer/setup",
+    "https://docs.mulesoft.com/visualizer/visualizer-app-network"
+  ]
+}
