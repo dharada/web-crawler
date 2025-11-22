@@ -14,11 +14,17 @@ use std::sync::{Arc, Mutex};
 use url::Url;
 
 const MAX_SEGMENTS: usize = 3;
-const MAX_DEPTH: usize = 5;
+const DEFAULT_MAX_DEPTH: usize = 5;
+
+fn default_max_depth() -> usize {
+    DEFAULT_MAX_DEPTH
+}
 
 #[derive(Deserialize)]
 struct AppConfig {
     start_urls: Vec<String>,
+    #[serde(default = "default_max_depth")]
+    max_depth: usize,
 }
 
 #[tokio::main]
@@ -53,6 +59,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config: AppConfig = serde_json::from_reader(reader)?;
 
     let mut start_urls = config.start_urls;
+    let max_depth = config.max_depth;
     // Deduplicate and sort start URLs to avoid processing the same URL multiple times
     // start_urls.sort();
     start_urls.dedup();
@@ -61,14 +68,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::new();
 
     for url in start_urls {
-        crawl(client.clone(), Url::parse(&url)?, visited.clone(), 0).await;
+        crawl(client.clone(), Url::parse(&url)?, visited.clone(), 0, max_depth).await;
     }
 
     Ok(())
 }
 
-async fn crawl(client: Client, url: Url, visited: Arc<Mutex<HashSet<String>>>, depth: usize) {
-    let max_depth = MAX_DEPTH;
+async fn crawl(
+    client: Client,
+    url: Url,
+    visited: Arc<Mutex<HashSet<String>>>,
+    depth: usize,
+    max_depth: usize,
+) {
     if depth > max_depth {
         return;
     }
@@ -88,7 +100,7 @@ async fn crawl(client: Client, url: Url, visited: Arc<Mutex<HashSet<String>>>, d
             if response.status().is_success() {
                 if let Ok(body) = response.text().await {
                     save_to_file(&url, &body);
-                    parse_links(&client, &url, &body, visited.clone(), depth).await;
+                    parse_links(&client, &url, &body, visited.clone(), depth, max_depth).await;
                 }
             } else {
                 error!("Failed to fetch {}: Status {}", url, response.status());
@@ -142,6 +154,7 @@ async fn parse_links(
     html: &str,
     visited: Arc<Mutex<HashSet<String>>>,
     depth: usize,
+    max_depth: usize,
 ) {
     let document = Html::parse_document(html);
     let selector = Selector::parse("a[href]").unwrap();
@@ -181,6 +194,6 @@ async fn parse_links(
         let client_clone = client.clone();
         // Recursive call with depth increment
         // Box::pin is required to handle recursion in async functions
-        Box::pin(crawl(client_clone, link, visited_clone, depth + 1)).await;
+        Box::pin(crawl(client_clone, link, visited_clone, depth + 1, max_depth)).await;
     }
 }

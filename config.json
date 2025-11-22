@@ -12,5 +12,6 @@
     "https://docs.mulesoft.com/visualizer/",
     "https://docs.mulesoft.com/visualizer/setup",
     "https://docs.mulesoft.com/visualizer/visualizer-app-network"
-  ]
+  ],
+  "max_depth": 5
 }
