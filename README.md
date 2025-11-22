@@ -17,7 +17,11 @@ If you haven't installed them yet, you can do so via [rustup.rs](https://rustup.
 
 ## Configuration
 
-Before running this crawler, ensure you have a `config.json` file in the root directory of the project. This file defines the starting URLs for the crawler.
+The crawler is configured via `config.json`.
+
+- `start_urls`: A list of URLs to start crawling from.
+- `max_depth`: Maximum depth to crawl (default: 5).
+
 
 **`config.json` example:**
 ```
@@ -26,7 +30,8 @@ json
   "start_urls": [
     "https://docs.mulesoft.com/release-notes/index",
     "https://docs.mulesoft.com/general/glossary"
-  ]
+  ],
+  "max_depth": 2
 }
 ```
 
@@ -66,7 +71,7 @@ cargo run --release
 ## Project Structure
 
 *   `src/main.rs`: Main application logic.
-*   `config.json`: Configuration file for target URLs.
+*   `config.json`: Configuration file for target URLs and Maximum depth to crawl.
 *   `crawled_pages/`: Directory where output text files are stored.
 *   `my-web-crawler.log`: Execution log file created at runtime.
 ```
